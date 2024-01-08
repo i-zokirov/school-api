@@ -1,3 +1,4 @@
+import { Group } from 'src/groups/entities/group.entity'
 import { Student } from 'src/students/entities/student.entity'
 import { Subject } from 'src/subjects/entities/subject.entity'
 import { User } from 'src/users/entities/user.entity'
@@ -32,6 +33,9 @@ export class Grade {
 
   @ManyToOne(() => Subject, { onDelete: 'SET NULL' })
   subject: Subject
+
+  @ManyToOne(() => Group, { onDelete: 'SET NULL' })
+  group: Group
 
   @UpdateDateColumn()
   updatedAt: string

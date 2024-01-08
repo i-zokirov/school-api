@@ -17,6 +17,7 @@ import { Roles } from 'src/decorators/roles'
 import { AuthenticationGuard } from 'src/guards/authentication.guard'
 import { AuthorizationGuard } from 'src/guards/authorization.guard'
 import { StudentsService } from 'src/students/students.service'
+import { SubjectsService } from 'src/subjects/subjects.service'
 import { UserRole } from 'src/types/enums'
 import { User } from 'src/users/entities/user.entity'
 import { UsersService } from 'src/users/users.service'
@@ -34,7 +35,8 @@ export class GroupsController {
   constructor(
     private readonly groupsService: GroupsService,
     private readonly usersService: UsersService,
-    private readonly studentsService: StudentsService
+    private readonly studentsService: StudentsService,
+    private readonly subjectsService: SubjectsService
   ) {}
 
   @Post()
@@ -68,6 +70,15 @@ export class GroupsController {
         dto.teachers = teachers.filter(
           (teacher) => teacher.role === UserRole.Teacher
         )
+      }
+    }
+
+    if (createGroupDto.subjects && createGroupDto.subjects.length) {
+      const subjects = await this.subjectsService.findAll({
+        where: { id: In(createGroupDto.subjects) }
+      })
+      if (subjects && subjects.length) {
+        dto.subjects = subjects
       }
     }
 
@@ -280,6 +291,76 @@ export class GroupsController {
       )
 
     group.teachers.push(teacher)
+
+    return this.groupsService.save(group)
+  }
+
+  @Patch(':group_id/subjects/:subject_id/remove')
+  @Roles(UserRole.Director)
+  @ApiOperation({
+    summary: 'Remove subject from a group',
+    description: `Permissions: ${UserRole.Director}`
+  })
+  async removeSubject(
+    @Param('group_id') group_id: string,
+    @Param('subject_id') subject_id: string
+  ) {
+    const group = await this.groupsService.findOne({
+      where: { id: group_id },
+      relations: ['subjects']
+    })
+
+    if (!group)
+      throw new NotFoundException(`Group with id ${group_id} not found`)
+
+    const subject = await this.subjectsService.findOne({
+      where: { id: subject_id }
+    })
+
+    if (!subject)
+      throw new NotFoundException(`Subject with id ${subject_id} not found`)
+
+    if (!group.subjects.some((s) => s.id === subject.id))
+      throw new BadRequestException(
+        `Subject with id ${subject_id} not found in group with id ${group_id}`
+      )
+
+    group.subjects = group.subjects.filter((s) => s.id !== subject.id)
+
+    return this.groupsService.save(group)
+  }
+
+  @Patch(':group_id/subjects/:subject_id/add')
+  @Roles(UserRole.Director)
+  @ApiOperation({
+    summary: 'Add subject to a group',
+    description: `Permissions: ${UserRole.Director}`
+  })
+  async addSubject(
+    @Param('group_id') group_id: string,
+    @Param('subject_id') subject_id: string
+  ) {
+    const group = await this.groupsService.findOne({
+      where: { id: group_id },
+      relations: ['subjects']
+    })
+
+    if (!group)
+      throw new NotFoundException(`Group with id ${group_id} not found`)
+
+    const subject = await this.subjectsService.findOne({
+      where: { id: subject_id }
+    })
+
+    if (!subject)
+      throw new NotFoundException(`Subject with id ${subject_id} not found`)
+
+    if (group.subjects.some((s) => s.id === subject.id))
+      throw new BadRequestException(
+        `Subject with id ${subject_id} already in group with id ${group_id}`
+      )
+
+    group.subjects.push(subject)
 
     return this.groupsService.save(group)
   }

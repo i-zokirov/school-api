@@ -1,4 +1,5 @@
 import { Student } from 'src/students/entities/student.entity'
+import { Subject } from 'src/subjects/entities/subject.entity'
 import { User } from 'src/users/entities/user.entity'
 import {
   Column,
@@ -26,6 +27,12 @@ export class Group {
   @ManyToMany(() => User, (user) => user.groups, { onDelete: 'CASCADE' })
   @JoinTable()
   teachers: User[]
+
+  @ManyToMany(() => Subject, (subject) => subject.groups, {
+    onDelete: 'CASCADE'
+  })
+  @JoinTable()
+  subjects: Subject[]
 
   @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
   createdBy: User

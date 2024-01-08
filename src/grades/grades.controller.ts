@@ -8,10 +8,11 @@ import {
   UnauthorizedException,
   UseGuards
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { AuthUser } from 'src/decorators/auth-user'
 import { Roles } from 'src/decorators/roles'
 import Serialize from 'src/decorators/serialize'
+import { GroupsService } from 'src/groups/groups.service'
 import { AuthenticationGuard } from 'src/guards/authentication.guard'
 import { AuthorizationGuard } from 'src/guards/authorization.guard'
 import { StudentsService } from 'src/students/students.service'
@@ -25,12 +26,14 @@ import { GradesService } from './grades.service'
 
 @Controller()
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
-@ApiBearerAuth()
+@ApiBearerAuth('jwt')
+@ApiTags('Grades')
 export class GradesController {
   constructor(
     private readonly gradesService: GradesService,
     private readonly studentsService: StudentsService,
-    private readonly subjectsService: SubjectsService
+    private readonly subjectsService: SubjectsService,
+    private readonly groupsService: GroupsService
   ) {}
 
   @Post('students/:student_id/grades')
@@ -38,7 +41,8 @@ export class GradesController {
   @Serialize(GradeDto)
   @ApiOperation({
     summary: 'Create a grade',
-    description: 'Only users with a teacher role are allowed to create grades'
+    description:
+      'Only users with a teacher role are allowed to create grades and only for students who share a group with them'
   })
   @ApiBody({ type: CreateGradeDto })
   async create(
@@ -53,10 +57,30 @@ export class GradesController {
     }
 
     const student = await this.studentsService.findOne({
-      where: { id: student_id }
+      where: { id: student_id },
+      relations: ['group']
     })
 
     if (!student) throw new NotFoundException('Student not found')
+
+    if (!student.group) {
+      throw new NotFoundException('Student is not in a group')
+    }
+
+    const group = await this.groupsService.findOne({
+      where: { id: student.group.id },
+      relations: ['teachers', 'subjects']
+    })
+
+    if (!group) throw new NotFoundException('Group not found')
+
+    const teacher = group.teachers.find((t) => t.id === authUser.id)
+
+    if (!teacher) {
+      throw new UnauthorizedException(
+        'You are not allowed to create grades for this student. Reason: You are not in the same group as this student.'
+      )
+    }
 
     const subject = await this.subjectsService.findOne({
       where: { id: subject_id }
@@ -64,9 +88,16 @@ export class GradesController {
 
     if (!subject) throw new NotFoundException('Subject not found')
 
+    if (group.subjects.some((s) => s.id === subject.id)) {
+      throw new UnauthorizedException(
+        'You are not allowed to create grades for this student from this subject. Reason: This subject is not in the same group as this student'
+      )
+    }
+
     dto.student = student
     dto.subject = subject
     dto.teacher = authUser
+    dto.group = group
 
     return this.gradesService.create(dto)
   }
@@ -86,7 +117,7 @@ export class GradesController {
           id: student_id
         }
       },
-      relations: ['student', 'subject', 'teacher']
+      relations: ['student', 'subject', 'teacher', 'group']
     })
   }
 
@@ -142,7 +173,7 @@ export class GradesController {
           id: subject_id
         }
       },
-      relations: ['student', 'subject', 'teacher']
+      relations: ['student', 'subject', 'teacher', 'group']
     })
   }
 
@@ -164,5 +195,57 @@ export class GradesController {
       student_id,
       subject_id
     )
+  }
+
+  @Get('groups/:group_id/grades')
+  @Roles(UserRole.Teacher, UserRole.Director)
+  @Serialize(GradeDto)
+  @ApiOperation({ summary: 'Get all grades for a group' })
+  findAllForGroup(@Param('group_id') group_id: string) {
+    return this.gradesService.findAll({
+      where: {
+        group: {
+          id: group_id
+        }
+      },
+      relations: ['student', 'subject', 'teacher', 'group']
+    })
+  }
+
+  @Get('groups/:group_id/grades/average')
+  @Roles(UserRole.Teacher, UserRole.Director)
+  @ApiOperation({ summary: 'Get the average grade for a group' })
+  findAverageForGroup(@Param('group_id') group_id: string) {
+    return this.gradesService.findGroupAverageGrade(group_id)
+  }
+
+  @Get('groups/:group_id/grades/subjects/average')
+  @Roles(UserRole.Teacher, UserRole.Director)
+  @ApiOperation({
+    summary: 'Get the average grade for a group for all subjects seperately'
+  })
+  findAverageForSubjectsForGroup(@Param('group_id') group_id: string) {
+    return this.gradesService.findGroupAverageGradesForAllSubjects(group_id)
+  }
+
+  @Get('groups/:group_id/grades/subjects/:subject_id')
+  @Roles(UserRole.Teacher, UserRole.Director)
+  @Serialize(GradeDto)
+  @ApiOperation({ summary: 'Get all grades for a group for a subject' })
+  findBySubjectIdForGroup(
+    @Param('group_id') group_id: string,
+    @Param('subject_id') subject_id: string
+  ) {
+    return this.gradesService.findAll({
+      where: {
+        group: {
+          id: group_id
+        },
+        subject: {
+          id: subject_id
+        }
+      },
+      relations: ['student', 'subject', 'teacher', 'group']
+    })
   }
 }

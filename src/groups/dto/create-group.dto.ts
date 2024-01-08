@@ -15,6 +15,16 @@ export class CreateGroupDto {
   @ApiPropertyOptional({
     type: [String],
     required: false,
+    description: 'Subject ids',
+    example: ['Subject ID 1', 'Subject ID 2']
+  })
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  subjects: string[]
+
+  @ApiPropertyOptional({
+    type: [String],
+    required: false,
     description: 'Students ids',
     example: ['Student ID 1', 'Student ID 2']
   })

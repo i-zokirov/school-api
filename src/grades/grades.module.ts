@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AuthModule } from 'src/auth/auth.module'
+import { GroupsModule } from 'src/groups/groups.module'
 import { StudentsModule } from 'src/students/students.module'
 import { SubjectsModule } from 'src/subjects/subjects.module'
 import { UsersModule } from 'src/users/users.module'
@@ -14,7 +15,8 @@ import { GradesService } from './grades.service'
     AuthModule,
     UsersModule,
     StudentsModule,
-    SubjectsModule
+    SubjectsModule,
+    GroupsModule
   ],
   controllers: [GradesController],
   providers: [GradesService],

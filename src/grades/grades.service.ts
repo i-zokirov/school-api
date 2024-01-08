@@ -20,6 +20,35 @@ export class GradesService {
     return this.repository.findOne(options)
   }
 
+  findGroupAverageGrade(group_id: string) {
+    return this.repository
+      .createQueryBuilder('grade')
+      .select('AVG(grade.value)', 'average')
+      .where('grade.group.id = :group_id', { group_id })
+      .getRawOne()
+  }
+
+  findGroupAverageGradesForAllSubjects(group_id: string) {
+    return this.repository
+      .createQueryBuilder('grade')
+      .select('AVG(grade.value)', 'average')
+      .addSelect('subject.name', 'subject')
+      .addSelect('subject.id', 'id')
+      .leftJoin('grade.subject', 'subject')
+      .where('grade.group.id = :group_id', { group_id })
+      .groupBy('subject.id')
+      .getRawMany()
+  }
+
+  findGroupAverageGradeForASubject(group_id: string, subject_id: string) {
+    return this.repository
+      .createQueryBuilder('grade')
+      .select('AVG(grade.value)', 'average')
+      .where('grade.group.id = :group_id', { group_id })
+      .andWhere('grade.subject.id = :subject_id', { subject_id })
+      .getRawOne()
+  }
+
   findStudentAverageGrade(student_id: string) {
     return this.repository
       .createQueryBuilder('grade')
