@@ -1,0 +1,21 @@
+{
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "prettier.tabWidth": 2,
+    "prettier.semi": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "liveServer.settings.donotShowInfoMsg": true,
+    "editor.formatOnSave": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "workbench.iconTheme": "material-icon-theme",
+    "editor.inlineSuggest.enabled": true,
+    "editor.minimap.enabled": false,
+    "git.openRepositoryInParentFolders": "never",
+    "window.zoomLevel": 0
+  }
+  
