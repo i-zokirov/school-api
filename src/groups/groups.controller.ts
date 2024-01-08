@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -136,5 +137,150 @@ export class GroupsController {
   })
   remove(@Param('group_id') group_id: string) {
     return this.groupsService.removeOneById(group_id)
+  }
+
+  @Patch(':group_id/students/:student_id/remove')
+  @Roles(UserRole.Director)
+  @ApiOperation({
+    summary: 'Remove student from a group',
+    description: `Permissions: ${UserRole.Director}`
+  })
+  async removeStudent(
+    @Param('group_id') group_id: string,
+    @Param('student_id') student_id: string
+  ) {
+    const group = await this.groupsService.findOne({
+      where: { id: group_id },
+      relations: ['students']
+    })
+
+    if (!group)
+      throw new NotFoundException(`Group with id ${group_id} not found`)
+
+    const student = await this.studentsService.findOne({
+      where: { id: student_id }
+    })
+
+    if (!student)
+      throw new NotFoundException(`Student with id ${student_id} not found`)
+
+    if (!group.students.some((s) => s.id === student.id))
+      throw new BadRequestException(
+        `Student with id ${student_id} not found in group with id ${group_id}`
+      )
+
+    group.students = group.students.filter((s) => s.id !== student.id)
+
+    return this.groupsService.save(group)
+  }
+
+  @Patch(':group_id/students/:student_id/add')
+  @Roles(UserRole.Director)
+  @ApiOperation({
+    summary: 'Add student to a group',
+    description: `Permissions: ${UserRole.Director}`
+  })
+  async addStudent(
+    @Param('group_id') group_id: string,
+    @Param('student_id') student_id: string
+  ) {
+    const group = await this.groupsService.findOne({
+      where: { id: group_id },
+      relations: ['students']
+    })
+
+    if (!group)
+      throw new NotFoundException(`Group with id ${group_id} not found`)
+
+    const student = await this.studentsService.findOne({
+      where: { id: student_id }
+    })
+
+    if (!student)
+      throw new NotFoundException(`Student with id ${student_id} not found`)
+
+    if (group.students.some((s) => s.id === student.id))
+      throw new BadRequestException(
+        `Student with id ${student_id} already in group with id ${group_id}`
+      )
+
+    group.students.push(student)
+
+    return this.groupsService.save(group)
+  }
+
+  @Patch(':group_id/teachers/:teacher_id/remove')
+  @Roles(UserRole.Director)
+  @ApiOperation({
+    summary: 'Remove teacher from a group',
+    description: `Permissions: ${UserRole.Director}`
+  })
+  async removeTeacher(
+    @Param('group_id') group_id: string,
+    @Param('teacher_id') teacher_id: string
+  ) {
+    const group = await this.groupsService.findOne({
+      where: { id: group_id },
+      relations: ['teachers']
+    })
+
+    if (!group)
+      throw new NotFoundException(`Group with id ${group_id} not found`)
+
+    const teacher = await this.usersService.findOne({
+      where: { id: teacher_id }
+    })
+
+    if (!teacher)
+      throw new NotFoundException(`Teacher with id ${teacher_id} not found`)
+
+    if (!group.teachers.some((s) => s.id === teacher.id))
+      throw new BadRequestException(
+        `Teacher with id ${teacher_id} not found in group with id ${group_id}`
+      )
+
+    group.teachers = group.teachers.filter((s) => s.id !== teacher.id)
+
+    return this.groupsService.save(group)
+  }
+
+  @Patch(':group_id/teachers/:teacher_id/add')
+  @Roles(UserRole.Director)
+  @ApiOperation({
+    summary: 'Add teacher to a group',
+    description: `Permissions: ${UserRole.Director}`
+  })
+  async addTeacher(
+    @Param('group_id') group_id: string,
+    @Param('teacher_id') teacher_id: string
+  ) {
+    const group = await this.groupsService.findOne({
+      where: { id: group_id },
+      relations: ['teachers']
+    })
+
+    if (!group)
+      throw new NotFoundException(`Group with id ${group_id} not found`)
+
+    const teacher = await this.usersService.findOne({
+      where: { id: teacher_id }
+    })
+
+    if (!teacher)
+      throw new NotFoundException(`Teacher with id ${teacher_id} not found`)
+
+    if (teacher.role !== UserRole.Teacher)
+      throw new BadRequestException(
+        `User with id ${teacher_id} is not a teacher`
+      )
+
+    if (group.teachers.some((s) => s.id === teacher.id))
+      throw new BadRequestException(
+        `Teacher with id ${teacher_id} already in group with id ${group_id}`
+      )
+
+    group.teachers.push(teacher)
+
+    return this.groupsService.save(group)
   }
 }

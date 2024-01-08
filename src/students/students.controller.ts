@@ -33,7 +33,7 @@ export class StudentsController {
   @Roles(UserRole.Director, UserRole.Teacher)
   @ApiOperation({ summary: 'Get all students' })
   findAll() {
-    return this.studentsService.findAll({ relations: ['user'] })
+    return this.studentsService.findAll({ relations: ['user', 'group'] })
   }
 
   @Get(':student_id')
@@ -53,7 +53,7 @@ export class StudentsController {
 
     return this.studentsService.findOne({
       where: { id: student_id },
-      relations: ['user']
+      relations: ['user', 'group']
     })
   }
 

@@ -30,6 +30,10 @@ export class GroupsService {
     return this.repository.save(group)
   }
 
+  save(group: Group) {
+    return this.repository.save(group)
+  }
+
   async removeOneById(id: string) {
     const group = await this.findOne({ where: { id } })
     if (!group) {
