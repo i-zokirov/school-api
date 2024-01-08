@@ -1,6 +1,13 @@
 import { Group } from 'src/groups/entities/group.entity'
 import { User } from 'src/users/entities/user.entity'
-import { Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 
 @Entity()
 export class Student {
@@ -15,4 +22,10 @@ export class Student {
     nullable: true
   })
   group: Group
+
+  @UpdateDateColumn()
+  updatedAt: string
+
+  @CreateDateColumn()
+  createdAt: string
 }

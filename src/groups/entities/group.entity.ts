@@ -1,5 +1,14 @@
 import { Student } from 'src/students/entities/student.entity'
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { User } from 'src/users/entities/user.entity'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 
 @Entity()
 export class Group {
@@ -11,4 +20,13 @@ export class Group {
 
   @OneToMany(() => Student, (student) => student.group, { onDelete: 'CASCADE' })
   students: Student[]
+
+  @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
+  createdBy: User
+
+  @UpdateDateColumn()
+  updatedAt: string
+
+  @CreateDateColumn()
+  createdAt: string
 }

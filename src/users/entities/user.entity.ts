@@ -4,10 +4,12 @@ import { UserRole } from 'src/types/enums'
 import {
   BeforeInsert,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from 'typeorm'
 
 @Entity()
@@ -36,7 +38,13 @@ export class User {
 
   @OneToOne(() => Student, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
-  studentProfile: Student
+  studentProfile: Student | null
+
+  @UpdateDateColumn()
+  updatedAt: string
+
+  @CreateDateColumn()
+  createdAt: string
 
   @BeforeInsert()
   emailToLowerCase() {

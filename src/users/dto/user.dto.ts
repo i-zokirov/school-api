@@ -15,4 +15,6 @@ export class UserDto {
   createdAt: string
   @Expose()
   role: string
+  @Expose()
+  studentProfile: null
 }

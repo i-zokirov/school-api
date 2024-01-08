@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 
 @Entity()
 export class Subject {
@@ -13,4 +19,10 @@ export class Subject {
 
   @Column({ type: String, default: '', nullable: true })
   subjectCode: string
+
+  @UpdateDateColumn()
+  updatedAt: string
+
+  @CreateDateColumn()
+  createdAt: string
 }
