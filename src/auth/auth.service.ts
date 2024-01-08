@@ -34,11 +34,11 @@ export class AuthService {
   async authenticateUser(email: string, password: string) {
     const user = await this.usersService.findOne({ where: { email } })
     if (!user) {
-      return null
+      throw new BadRequestException('Invalid credentials')
     }
     const isPasswordValid = await user.comparePassword(password)
     if (!isPasswordValid) {
-      return new BadRequestException('Invalid credentials')
+      throw new BadRequestException('Invalid credentials')
     }
     const { password: _, ...rest } = user
     return rest

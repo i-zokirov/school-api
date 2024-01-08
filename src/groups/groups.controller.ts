@@ -93,7 +93,7 @@ export class GroupsController {
   })
   async findAll() {
     return this.groupsService.findAll({
-      relations: ['teachers', 'students', 'createdBy']
+      relations: ['teachers', 'students', 'createdBy', 'subjects']
     })
   }
 

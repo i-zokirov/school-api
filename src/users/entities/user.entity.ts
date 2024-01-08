@@ -7,6 +7,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToMany,
   OneToOne,
@@ -19,23 +20,25 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ type: String })
+  @Column({ type: 'varchar' })
   firstName: string
 
-  @Column({ type: String })
+  @Column({ type: 'varchar' })
   lastName: string
 
+  @Index()
   @Column({ unique: true })
   email: string
 
+  @Index()
   @Column({
-    type: String,
+    type: 'varchar',
     enum: [...Object.values(UserRole)],
     default: UserRole.Student
   })
   role: string
 
-  @Column({ type: String })
+  @Column({ type: 'varchar' })
   password: string
 
   @OneToOne(() => Student, { nullable: true, onDelete: 'SET NULL' })

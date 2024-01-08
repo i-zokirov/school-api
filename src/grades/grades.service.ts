@@ -66,6 +66,7 @@ export class GradesService {
       .leftJoin('grade.subject', 'subject')
       .where('grade.student.id = :student_id', { student_id })
       .groupBy('subject.id')
+      .orderBy('subject.name')
       .getRawMany()
   }
 

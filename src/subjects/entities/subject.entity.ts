@@ -13,13 +13,13 @@ export class Subject {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ type: String })
+  @Column({ type: 'varchar' })
   name: string
 
-  @Column({ type: String, default: '', nullable: true })
+  @Column({ type: 'varchar', default: '', nullable: true })
   description: string
 
-  @Column({ type: String, default: '', nullable: true })
+  @Column({ type: 'varchar', default: '', nullable: true })
   subjectCode: string
 
   @ManyToMany(() => Group, (group) => group.subjects, { onDelete: 'CASCADE' })

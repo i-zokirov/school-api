@@ -38,20 +38,16 @@ export class AuthController {
   })
   @Serialize(AuthSuccessDto)
   async login(@Body() loginUserDto: LoginUserDto) {
-    try {
-      const authenticatedUser = await this.authService.authenticateUser(
-        loginUserDto.email,
-        loginUserDto.password
-      )
-      if (!authenticatedUser) {
-        throw new BadRequestException('Invalid credentials')
-      }
-      return {
-        ...authenticatedUser,
-        access_token: this.authService.generateJWT(authenticatedUser as User)
-      }
-    } catch (error) {
-      throw new BadRequestException(error.message)
+    const authenticatedUser = await this.authService.authenticateUser(
+      loginUserDto.email,
+      loginUserDto.password
+    )
+    if (!authenticatedUser) {
+      throw new BadRequestException('Invalid credentials')
+    }
+    return {
+      ...authenticatedUser,
+      access_token: this.authService.generateJWT(authenticatedUser as User)
     }
   }
 }

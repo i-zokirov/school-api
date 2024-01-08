@@ -18,7 +18,7 @@ export class Group {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ type: String })
+  @Column({ type: 'varchar' })
   name: string
 
   @OneToMany(() => Student, (student) => student.group, { onDelete: 'CASCADE' })

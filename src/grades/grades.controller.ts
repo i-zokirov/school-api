@@ -88,7 +88,7 @@ export class GradesController {
 
     if (!subject) throw new NotFoundException('Subject not found')
 
-    if (group.subjects.some((s) => s.id === subject.id)) {
+    if (!group.subjects.some((s) => s.id === subject.id)) {
       throw new UnauthorizedException(
         'You are not allowed to create grades for this student from this subject. Reason: This subject is not in the same group as this student'
       )
@@ -117,7 +117,10 @@ export class GradesController {
           id: student_id
         }
       },
-      relations: ['student', 'subject', 'teacher', 'group']
+      relations: ['student', 'subject', 'teacher', 'group'],
+      order: {
+        receivedDate: 'DESC'
+      }
     })
   }
 
@@ -173,7 +176,10 @@ export class GradesController {
           id: subject_id
         }
       },
-      relations: ['student', 'subject', 'teacher', 'group']
+      relations: ['student', 'subject', 'teacher', 'group'],
+      order: {
+        receivedDate: 'DESC'
+      }
     })
   }
 
@@ -208,7 +214,10 @@ export class GradesController {
           id: group_id
         }
       },
-      relations: ['student', 'subject', 'teacher', 'group']
+      relations: ['student', 'subject', 'teacher', 'group'],
+      order: {
+        receivedDate: 'DESC'
+      }
     })
   }
 
@@ -245,7 +254,10 @@ export class GradesController {
           id: subject_id
         }
       },
-      relations: ['student', 'subject', 'teacher', 'group']
+      relations: ['student', 'subject', 'teacher', 'group'],
+      order: {
+        receivedDate: 'DESC'
+      }
     })
   }
 }

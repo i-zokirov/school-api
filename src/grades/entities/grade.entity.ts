@@ -16,13 +16,13 @@ export class Grade {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ type: Number })
+  @Column({ type: 'decimal', precision: 2, scale: 1 })
   value: number
 
-  @Column({ type: String, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   description: string | null
 
-  @Column({ type: Date, default: new Date() })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   receivedDate: string
 
   @ManyToOne(() => Student, { onDelete: 'CASCADE' })
