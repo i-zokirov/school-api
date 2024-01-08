@@ -1,7 +1,11 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
 import { ApiBody, ApiOperation } from '@nestjs/swagger'
+import Serialize from 'src/decorators/serialize'
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
+import { User } from 'src/users/entities/user.entity'
 import { AuthService } from './auth.service'
+import { AuthSuccessDto } from './dto/auth-success.dto'
+import { LoginUserDto } from './dto/login-user.dto'
 
 @Controller('auth')
 export class AuthController {
@@ -12,6 +16,7 @@ export class AuthController {
   @ApiBody({
     type: CreateUserDto
   })
+  @Serialize(AuthSuccessDto)
   async signup(@Body() createUserDto: CreateUserDto) {
     try {
       const registerData = await this.authService.registerUser(createUserDto)
@@ -22,6 +27,30 @@ export class AuthController {
           'User with this email address already exists'
         )
       }
+      throw new BadRequestException(error.message)
+    }
+  }
+
+  @Post('login')
+  @ApiOperation({ summary: 'Log in' })
+  @ApiBody({
+    type: LoginUserDto
+  })
+  @Serialize(AuthSuccessDto)
+  async login(@Body() loginUserDto: LoginUserDto) {
+    try {
+      const authenticatedUser = await this.authService.authenticateUser(
+        loginUserDto.email,
+        loginUserDto.password
+      )
+      if (!authenticatedUser) {
+        throw new BadRequestException('Invalid credentials')
+      }
+      return {
+        ...authenticatedUser,
+        access_token: this.authService.generateJWT(authenticatedUser as User)
+      }
+    } catch (error) {
       throw new BadRequestException(error.message)
     }
   }

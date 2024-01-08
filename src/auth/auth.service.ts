@@ -26,4 +26,17 @@ export class AuthService {
     const { password, ...rest } = user
     return { ...rest, access_token: this.generateJWT(user) }
   }
+
+  async authenticateUser(email: string, password: string) {
+    const user = await this.usersService.findOne({ where: { email } })
+    if (!user) {
+      return null
+    }
+    const isPasswordValid = await user.comparePassword(password)
+    if (!isPasswordValid) {
+      return null
+    }
+    const { password: _, ...rest } = user
+    return rest
+  }
 }
