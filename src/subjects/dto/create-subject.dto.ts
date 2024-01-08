@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class CreateSubjectDto {
   @ApiProperty({
@@ -7,6 +8,8 @@ export class CreateSubjectDto {
     required: true,
     type: String
   })
+  @IsNotEmpty()
+  @IsString()
   name: string
 
   @ApiPropertyOptional({
@@ -15,5 +18,7 @@ export class CreateSubjectDto {
     required: false,
     type: String
   })
+  @IsOptional()
+  @IsString()
   description?: string
 }

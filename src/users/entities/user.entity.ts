@@ -46,15 +46,17 @@ export class User {
   @CreateDateColumn()
   createdAt: string
 
-  @BeforeInsert()
-  emailToLowerCase() {
-    this.email = this.email.toLowerCase()
-  }
+  // @BeforeInsert()
+  // emailToLowerCase() {
+  //   this.email = this.email.toLowerCase()
+  // }
 
   @BeforeInsert()
   async hashPassword() {
     const salt = await bcrypt.genSalt()
-    this.password = await bcrypt.hash(this.password, salt)
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, salt)
+    }
   }
 
   async comparePassword(attempt: string) {

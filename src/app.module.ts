@@ -1,15 +1,16 @@
-import { Module } from '@nestjs/common'
+import { Module, ValidationPipe } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
+import { APP_PIPE } from '@nestjs/core'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import { AuthModule } from './auth/auth.module'
 import { TypeOrmConfigService } from './config/typeorm.config'
+import { GradesModule } from './grades/grades.module'
+import { GroupsModule } from './groups/groups.module'
+import { StudentsModule } from './students/students.module'
+import { SubjectsModule } from './subjects/subjects.module'
 import { UsersModule } from './users/users.module'
-import { AuthModule } from './auth/auth.module';
-import { GroupsModule } from './groups/groups.module';
-import { SubjectsModule } from './subjects/subjects.module';
-import { GradesModule } from './grades/grades.module';
-import { StudentsModule } from './students/students.module';
 
 @Module({
   imports: [
@@ -28,6 +29,12 @@ import { StudentsModule } from './students/students.module';
     StudentsModule
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({ whitelist: true })
+    }
+  ]
 })
 export class AppModule {}

@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  UnauthorizedException,
   UseGuards
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
@@ -46,10 +47,14 @@ export class StudentsController {
       authUser.role === UserRole.Student &&
       (!authUser.studentProfile || authUser.studentProfile.id !== student_id)
     )
-      return this.studentsService.findOne({
-        where: { id: student_id },
-        relations: ['user']
-      })
+      throw new UnauthorizedException(
+        'You are not allowed to access this resource'
+      )
+
+    return this.studentsService.findOne({
+      where: { id: student_id },
+      relations: ['user']
+    })
   }
 
   @Patch(':student_id')

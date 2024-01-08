@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm'
 import { CreateStudentDto } from './dto/create-student.dto'
@@ -11,12 +15,18 @@ export class StudentsService {
     @InjectRepository(Student) private repository: Repository<Student>
   ) {}
 
-  create(createStudentDto: CreateStudentDto) {
-    const { user_id } = createStudentDto
-    const student = this.repository.create({
-      user: { id: user_id }
-    })
-    return this.repository.save(student)
+  async create(createStudentDto: CreateStudentDto) {
+    try {
+      const { user_id } = createStudentDto
+      const student = this.repository.create({
+        user: { id: user_id }
+      })
+      const created = await this.repository.save(student)
+      return created
+    } catch (error) {
+      console.log(error)
+      throw new BadRequestException(error.message)
+    }
   }
 
   findAll(options?: FindManyOptions<Student>) {

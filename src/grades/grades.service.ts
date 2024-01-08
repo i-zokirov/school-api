@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
-import { CreateGradeDto } from './dto/create-grade.dto';
-import { UpdateGradeDto } from './dto/update-grade.dto';
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm'
+import { Grade } from './entities/grade.entity'
 
 @Injectable()
 export class GradesService {
-  create(createGradeDto: CreateGradeDto) {
-    return 'This action adds a new grade';
+  constructor(@InjectRepository(Grade) private repository: Repository<Grade>) {}
+
+  create(createGradeDto: Partial<Grade>) {
+    const grade = this.repository.create(createGradeDto)
+    return this.repository.save(grade)
   }
 
-  findAll() {
-    return `This action returns all grades`;
+  findAll(options?: FindManyOptions<Grade>) {
+    return this.repository.find(options)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} grade`;
+  findOne(options?: FindOneOptions<Grade>) {
+    return this.repository.findOne(options)
   }
 
-  update(id: number, updateGradeDto: UpdateGradeDto) {
-    return `This action updates a #${id} grade`;
+  findStudentAverageGrade(student_id: string) {
+    return this.repository
+      .createQueryBuilder('grade')
+      .select('AVG(grade.value)', 'average')
+      .where('grade.student.id = :student_id', { student_id })
+      .getRawOne()
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} grade`;
+  findStudentAverageGradesForAllSubjects(student_id: string) {
+    return this.repository
+      .createQueryBuilder('grade')
+      .select('AVG(grade.value)', 'average')
+      .addSelect('subject.name', 'subject')
+      .addSelect('subject.id', 'id')
+      .leftJoin('grade.subject', 'subject')
+      .where('grade.student.id = :student_id', { student_id })
+      .groupBy('subject.id')
+      .getRawMany()
+  }
+
+  findStudentAverageGradeForASubject(student_id: string, subject_id: string) {
+    return this.repository
+      .createQueryBuilder('grade')
+      .select('AVG(grade.value)', 'average')
+      .where('grade.student.id = :student_id', { student_id })
+      .andWhere('grade.subject.id = :subject_id', { subject_id })
+      .getRawOne()
   }
 }
