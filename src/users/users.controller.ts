@@ -16,6 +16,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery } from '@nestjs/swagger'
 import { AuthUser } from 'src/decorators/auth-user'
 import { Roles } from 'src/decorators/roles'
 import Serialize from 'src/decorators/serialize'
+import ValidateRoutParams from 'src/decorators/validate-params'
 import { AuthenticationGuard } from 'src/guards/authentication.guard'
 import { AuthorizationGuard } from 'src/guards/authorization.guard'
 import { StudentsService } from 'src/students/students.service'
@@ -31,6 +32,7 @@ import { UsersService } from './users.service'
 @Serialize(UserDto)
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @ApiBearerAuth('jwt')
+@ValidateRoutParams()
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
