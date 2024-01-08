@@ -6,6 +6,10 @@ import { AppService } from './app.service'
 import { TypeOrmConfigService } from './config/typeorm.config'
 import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module';
+import { GroupsModule } from './groups/groups.module';
+import { SubjectsModule } from './subjects/subjects.module';
+import { GradesModule } from './grades/grades.module';
+import { StudentsModule } from './students/students.module';
 
 @Module({
   imports: [
@@ -17,7 +21,11 @@ import { AuthModule } from './auth/auth.module';
       useClass: TypeOrmConfigService
     }),
     UsersModule,
-    AuthModule
+    AuthModule,
+    GroupsModule,
+    SubjectsModule,
+    GradesModule,
+    StudentsModule
   ],
   controllers: [AppController],
   providers: [AppService]

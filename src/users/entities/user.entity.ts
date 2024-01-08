@@ -1,5 +1,14 @@
 import * as bcrypt from 'bcryptjs'
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Student } from 'src/students/entities/student.entity'
+import { UserRole } from 'src/types/enums'
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn
+} from 'typeorm'
 
 @Entity()
 export class User {
@@ -15,8 +24,19 @@ export class User {
   @Column({ unique: true })
   email: string
 
+  @Column({
+    type: String,
+    enum: [...Object.values(UserRole)],
+    default: UserRole.Student
+  })
+  role: string
+
   @Column({ type: String })
   password: string
+
+  @OneToOne(() => Student, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn()
+  studentProfile: Student
 
   @BeforeInsert()
   emailToLowerCase() {

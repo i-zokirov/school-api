@@ -13,4 +13,6 @@ export class UserDto {
   updatedAt: string
   @Expose()
   createdAt: string
+  @Expose()
+  role: string
 }
