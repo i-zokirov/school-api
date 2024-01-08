@@ -22,16 +22,25 @@ export class UsersService {
     return this.repository.findOne(query)
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async updateById(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.repository.findOne({ where: { id } })
     if (!user) throw new NotFoundException(`User with id ${id} not found`)
     Object.assign(user, updateUserDto)
     return this.repository.save(user)
   }
 
-  async remove(id: string) {
+  async updateUser(user: User, updateUserDto: UpdateUserDto) {
+    Object.assign(user, updateUserDto)
+    return this.repository.save(user)
+  }
+
+  async removeById(id: string) {
     const user = await this.repository.findOne({ where: { id } })
     if (!user) throw new NotFoundException(`User with id ${id} not found`)
+    return this.repository.remove(user)
+  }
+
+  async removeUser(user: User) {
     return this.repository.remove(user)
   }
 }

@@ -14,7 +14,9 @@ export class Student {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @OneToOne(() => User, { onDelete: 'CASCADE' })
+  @OneToOne(() => User, (student) => student.studentProfile, {
+    onDelete: 'CASCADE'
+  })
   user: User
 
   @ManyToOne(() => Group, (group) => group.students, {

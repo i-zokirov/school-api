@@ -1,4 +1,5 @@
-import { Expose } from 'class-transformer'
+import { Expose, Type } from 'class-transformer'
+import { StudentDto } from 'src/students/dto/student.dto'
 
 export class UserDto {
   @Expose()
@@ -16,5 +17,6 @@ export class UserDto {
   @Expose()
   role: string
   @Expose()
-  studentProfile: null
+  @Type(() => StudentDto)
+  studentProfile: null | StudentDto
 }
