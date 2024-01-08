@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcryptjs'
+import { Group } from 'src/groups/entities/group.entity'
 import { Student } from 'src/students/entities/student.entity'
 import { UserRole } from 'src/types/enums'
 import {
@@ -7,6 +8,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn
@@ -40,16 +42,21 @@ export class User {
   @JoinColumn()
   studentProfile: Student | null
 
+  @ManyToMany(() => Group, (group) => group.teachers, {
+    onDelete: 'CASCADE'
+  })
+  groups: Group[]
+
   @UpdateDateColumn()
   updatedAt: string
 
   @CreateDateColumn()
   createdAt: string
 
-  // @BeforeInsert()
-  // emailToLowerCase() {
-  //   this.email = this.email.toLowerCase()
-  // }
+  @BeforeInsert()
+  emailToLowerCase() {
+    this.email = this.email.toLowerCase()
+  }
 
   @BeforeInsert()
   async hashPassword() {

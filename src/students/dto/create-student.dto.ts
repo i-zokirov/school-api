@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsMongoId, IsNotEmpty } from 'class-validator'
+import { IsNotEmpty, IsUUID } from 'class-validator'
 
 export class CreateStudentDto {
   @ApiProperty({
@@ -8,6 +8,6 @@ export class CreateStudentDto {
     required: true
   })
   @IsNotEmpty()
-  @IsMongoId()
+  @IsUUID()
   user_id: string
 }

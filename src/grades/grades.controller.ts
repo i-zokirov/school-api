@@ -11,6 +11,7 @@ import {
 import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger'
 import { AuthUser } from 'src/decorators/auth-user'
 import { Roles } from 'src/decorators/roles'
+import Serialize from 'src/decorators/serialize'
 import { AuthenticationGuard } from 'src/guards/authentication.guard'
 import { AuthorizationGuard } from 'src/guards/authorization.guard'
 import { StudentsService } from 'src/students/students.service'
@@ -18,6 +19,7 @@ import { SubjectsService } from 'src/subjects/subjects.service'
 import { UserRole } from 'src/types/enums'
 import { User } from 'src/users/entities/user.entity'
 import { CreateGradeDto } from './dto/create-grade.dto'
+import { GradeDto } from './dto/grade.dto'
 import { Grade } from './entities/grade.entity'
 import { GradesService } from './grades.service'
 
@@ -33,6 +35,7 @@ export class GradesController {
 
   @Post('students/:student_id/grades')
   @Roles(UserRole.Teacher)
+  @Serialize(GradeDto)
   @ApiOperation({
     summary: 'Create a grade',
     description: 'Only users with a teacher role are allowed to create grades'
@@ -70,6 +73,7 @@ export class GradesController {
 
   @Get('students/:student_id/grades')
   @Roles(UserRole.Teacher, UserRole.Director, UserRole.Student)
+  @Serialize(GradeDto)
   @ApiOperation({ summary: 'Get all grades for a student' })
   findAll(@Param('student_id') student_id: string, @AuthUser() authUser: User) {
     if (authUser.role === UserRole.Student && authUser.id !== student_id)
@@ -118,6 +122,7 @@ export class GradesController {
 
   @Get('students/:student_id/grades/subjects/:subject_id')
   @Roles(UserRole.Teacher, UserRole.Director, UserRole.Student)
+  @Serialize(GradeDto)
   @ApiOperation({ summary: 'Get all grades for a student for a subject' })
   findBySubjectId(
     @Param('student_id') student_id: string,

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { StudentsService } from 'src/students/students.service'
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
@@ -38,7 +38,7 @@ export class AuthService {
     }
     const isPasswordValid = await user.comparePassword(password)
     if (!isPasswordValid) {
-      return null
+      return new BadRequestException('Invalid credentials')
     }
     const { password: _, ...rest } = user
     return rest

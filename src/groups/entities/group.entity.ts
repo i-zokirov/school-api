@@ -4,6 +4,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -20,6 +22,10 @@ export class Group {
 
   @OneToMany(() => Student, (student) => student.group, { onDelete: 'CASCADE' })
   students: Student[]
+
+  @ManyToMany(() => User, (user) => user.groups, { onDelete: 'CASCADE' })
+  @JoinTable()
+  teachers: User[]
 
   @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
   createdBy: User
