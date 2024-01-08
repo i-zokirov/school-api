@@ -36,7 +36,7 @@ Nest is [MIT licensed](LICENSE).
 
 ## Design Choices
 
-### Single User entity with a role property
+## Single User entity with a role property
 
 Having a single User entity with a role property and creating a separate Student entity that has a one-to-one relationship with the User entity approach is chosen for several reasons:
 
