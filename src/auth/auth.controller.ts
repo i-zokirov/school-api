@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
-import { ApiBody, ApiOperation } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import Serialize from 'src/decorators/serialize'
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
 import { User } from 'src/users/entities/user.entity'
@@ -8,6 +8,7 @@ import { AuthSuccessDto } from './dto/auth-success.dto'
 import { LoginUserDto } from './dto/login-user.dto'
 
 @Controller('auth')
+@ApiTags('Auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

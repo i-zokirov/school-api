@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
   UseGuards
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { AuthUser } from 'src/decorators/auth-user'
 import { Roles } from 'src/decorators/roles'
 import Serialize from 'src/decorators/serialize'
@@ -26,6 +26,7 @@ import { StudentsService } from './students.service'
 @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @ApiBearerAuth('jwt')
 @ValidateRoutParams()
+@ApiTags('Students')
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 

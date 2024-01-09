@@ -9,7 +9,7 @@ const configService = new ConfigService()
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
   port: configService.get<number>('DATABASE_PORT'),
-  synchronize: true,
+  synchronize: false,
   logging: true,
   url: configService.get<string>('DATABASE_URL'),
   entities: ['dist/**/**/*.entity.js'],
